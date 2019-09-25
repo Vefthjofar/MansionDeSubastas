@@ -16,8 +16,11 @@ const artService = () => {
     });
   };
 
-  const getArtById = (id, cb, errorCb) => {
-    // Your implementation goes here
+  const getArtById = async (id, cb, errorCb) => {
+    return await globalTryCatch(async () => {
+      const art = await dbProvider.Art.findById(id);
+      return art;
+    });
   };
 
   const createArt = (art, cb, errorCb) => {

@@ -12,6 +12,11 @@ app.get("/api/arts", async function(req, res) {
   return res.json(result);
 });
 
+app.get("/api/arts/:id", async function(req, res){
+  const result = await artService.getArtById(req.params.id);
+  return res.json(result);
+});
+
 app.listen(3000, function() {
   console.log("Server is listening on port 3000");
 });
