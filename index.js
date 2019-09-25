@@ -106,6 +106,18 @@ app.post("/api/auctions", function(req, res) {
   );
 });
 
+app.post("/api/auctions/:id/bids", function(req, res) {
+  auctionService.createAuctionBid(
+    req.body,
+    function(auctionBid) {
+      return res.status(201).json(auctionBid);
+    },
+    function(err) {
+      return res.status(400).json(err);
+    }
+  );
+});
+
 app.get("/api/auctions/:id/bids", async function(req, res) {
   const result = await auctionService.getAuctionBidsWithinAuction(
     req.params.id

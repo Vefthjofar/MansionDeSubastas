@@ -46,6 +46,38 @@ const auctionService = () => {
       }
     });
   };
+  //Auction bids must be higher than the minimum
+  //price and must also be higher than the current highest bid. If the auction bid price is
+  //lower than the minimum price or current highest bid, the web service should return a
+  //status code 412 (Precondition failed).
+
+  // gæti komið error ef hann reynir að ná í winningbid þar sem það er ekkert bid**.
+  const createAuctionBid = async (auctionBid, cb, errorCb) => {
+    const winningBid = await dbProvider.AuctionBid.find({
+      auctionId: auctionBid.auctionId
+    })
+      .sort("-price")
+      .limit(1);
+    const auction = await dbProvider.Auction.findById(auctionBid.auctionId);
+
+    if (
+      auctionBid.price > auction.minimumPrice &&
+      auctionBid.price > winningBid[0].price //**
+    ) {
+      const resp = dbProvider.AuctionBid.create(auctionBid, function(
+        err,
+        result
+      ) {
+        if (err) {
+          errorCb(err);
+        } else {
+          cb(result);
+        }
+      });
+    } else {
+      console.log("not good enough");
+    }
+  };
 
   const getAuctionBidsWithinAuction = async (auctionId, cb, errorCb) => {
     return await globalTryCatch(async () => {
@@ -63,6 +95,7 @@ const auctionService = () => {
     getAuctionById,
     getAuctionWinner,
     createAuction,
+    createAuctionBid,
     getAuctionBidsWithinAuction,
     placeNewBid
   };
