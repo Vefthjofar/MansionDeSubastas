@@ -23,8 +23,11 @@ const customerService = () => {
           });
     };
 
-    const getCustomerAuctionBids = (customerId, cb, errorCb) => {
-        // Your implementation goes here
+    const getCustomerAuctionBids = async (Id, cb, errorCb) => {
+        return await globalTryCatch(async () => {
+            const bids = await dbProvider.AuctionBid.find({customerId: Id});
+            return bids;
+          });
     };
 
 	const createCustomer = (customer, cb, errorCb) => {

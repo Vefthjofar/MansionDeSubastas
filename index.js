@@ -42,6 +42,11 @@ app.get("/api/customers/:id", async function(req, res){
   return res.json(result);
 });
 
+app.get("/api/customers/:id/auction-bids", async function(req, res){
+  const result = await customerService.getCustomerAuctionBids(req.params.id);
+  return res.json(result);
+});
+
 // Auctions
 app.get("/api/auctions", async function(req, res) {
   const result = await auctionService.getAllAuctions();
