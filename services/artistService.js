@@ -24,7 +24,10 @@ const artistService = () => {
     };
 
     const createArtist = (artist, cb, errorCb) => {
-        // Your implementation goes here
+      const resp = dbProvider.Artist.create(artist, function (err, result) {
+        if (err) { errorCb(err); }
+        else { cb(result); }
+      });
     };
 
     return {
