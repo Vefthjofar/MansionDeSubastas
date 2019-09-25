@@ -90,6 +90,11 @@ app.post("/api/auctions", function (req, res) {
   });
 });
 
+app.get("/api/auctions/:id/bids", async function (req, res) {
+  const result = await auctionService.getAuctionBidsWithinAuction(req.params.id);
+  return res.json(result);
+});
+
 
 app.listen(3000, function () {
   console.log("Server is listening on port 3000");

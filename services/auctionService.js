@@ -34,8 +34,11 @@ const auctionService = () => {
     });
   };
 
-  const getAuctionBidsWithinAuction = (auctionId, cb, errorCb) => {
-    // Your implementation goes here
+  const getAuctionBidsWithinAuction = async (auctionId, cb, errorCb) => {
+    return await globalTryCatch(async () => {
+        const bids = await dbProvider.AuctionBid.find({ auctionId: auctionId });
+        return bids;
+    });
   };
 
   const placeNewBid = (auctionId, customerId, price, cb, errorCb) => {
