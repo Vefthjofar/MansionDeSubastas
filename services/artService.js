@@ -3,7 +3,7 @@ const dbProvider = require("../data/db");
 const globalTryCatch = async cb => {
   try {
     return await cb();
-  } catch(err) {
+  } catch (err) {
     return err;
   }
 }
@@ -11,20 +11,24 @@ const globalTryCatch = async cb => {
 const artService = () => {
   const getAllArts = async (cb, errorCb) => {
     return await globalTryCatch(async () => {
-      const arts = await dbProvider.Art.find({});
-      return arts;
+      const resp = await dbProvider.Art.find({});
+      return resp;
     });
   };
 
   const getArtById = async (id, cb, errorCb) => {
     return await globalTryCatch(async () => {
-      const art = await dbProvider.Art.findById(id);
-      return art;
+      const resp = await dbProvider.Art.findById(id);
+      return resp;
     });
   };
 
   const createArt = (art, cb, errorCb) => {
     // Your implementation goes here
+    const resp = dbProvider.Art.create(art, function (err, result) {
+      if (err) { errorCb(err); }
+      else { cb(result); }
+    });
   };
 
   return {
