@@ -20,6 +20,14 @@ app.get("/api/arts/:id", async function(req, res){
   return res.json(result);
 });
 
+app.post("/api/arts", function(req, res) {
+    artService.createArt(req.body, function(art) {
+        return res.status(201).json(art);
+    }, function(err) {
+        return res.status(400).json(err);
+    });
+});
+
 // Artists
 app.get("/api/artists", async function(req, res) {
   const result = await artistService.getAllArtists();
