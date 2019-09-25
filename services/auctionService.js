@@ -6,7 +6,7 @@ const globalTryCatch = async cb => {
   } catch (err) {
     return err;
   }
-}
+};
 
 const auctionService = () => {
   const getAllAuctions = async (cb, errorCb) => {
@@ -16,34 +16,47 @@ const auctionService = () => {
     });
   };
 
-  const getAuctionById = async (id, cb, errorCb) => {
+  const getAuctionById = async (auctionId, cb, errorCb) => {
     return await globalTryCatch(async () => {
-      const auction = await dbProvider.Auction.findById(id);
+      const auction = await dbProvider.Auction.findById(auctionId);
       return auction;
     });
   };
 
-  const getAuctionWinner = (auctionId, cb, errorCb) => {
-    // Your implementation goes here
+  const getAuctionWinner = async (auctionId, cb, errorCb) => {
+    return await globalTryCatch(async () => {
+      const winningBid = await dbProvider.AuctionBid.find({
+        auctionId: auctionId
+      })
+        .sort("-price")
+        .limit(1);
+      const winner = await dbProvider.Customer.findById(
+        winningBid[0].customerId
+      );
+      return winner;
+    });
   };
 
   const createAuction = (auction, cb, errorCb) => {
-    const resp = dbProvider.Auction.create(auction, function (err, result) {
-      if (err) { errorCb(err); }
-      else { cb(result); }
+    const resp = dbProvider.Auction.create(auction, function(err, result) {
+      if (err) {
+        errorCb(err);
+      } else {
+        cb(result);
+      }
     });
   };
 
   const getAuctionBidsWithinAuction = async (auctionId, cb, errorCb) => {
     return await globalTryCatch(async () => {
-        const bids = await dbProvider.AuctionBid.find({ auctionId: auctionId });
-        return bids;
+      const bids = await dbProvider.AuctionBid.find({ auctionId: auctionId });
+      return bids;
     });
   };
 
   const placeNewBid = (auctionId, customerId, price, cb, errorCb) => {
     // Your implementation goes here
-  }
+  };
 
   return {
     getAllAuctions,
