@@ -1,5 +1,5 @@
 // Here the web service should be setup and routes declared
-const ufoService = require("./services/artService");
+const artService = require("./services/artService");
 const express = require("express");
 const bodyParser = require("body-parser");
 const app = express();

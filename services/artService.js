@@ -1,8 +1,18 @@
+const dbProvider = require("../data/db");
+
+const globalTryCatch = async cb => {
+  try {
+    return await cb();
+  } catch(err) {
+    return err;
+  }
+}
+
 const artService = () => {
   const getAllArts = async (cb, errorCb) => {
     return await globalTryCatch(async () => {
-      const arts = await art.find({});
-      return ufos;
+      const arts = await dbProvider.Art.find({});
+      return arts;
     });
   };
 
