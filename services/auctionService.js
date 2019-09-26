@@ -4,7 +4,10 @@ const globalTryCatch = async cb => {
   try {
     return await cb();
   } catch (err) {
-    return err;
+    return {
+      status: 500,
+      body: err
+    };
   }
 };
 
@@ -12,14 +15,32 @@ const auctionService = () => {
   const getAllAuctions = async (cb, errorCb) => {
     return await globalTryCatch(async () => {
       const auctions = await dbProvider.Auction.find({});
-      return auctions;
+      if(auctions.length == 0) {
+        return {
+          status: 404,
+          body: ""
+        }
+      }
+      return {
+        status: 200,
+        body: auctions
+      };
     });
   };
 
   const getAuctionById = async (auctionId, cb, errorCb) => {
     return await globalTryCatch(async () => {
       const auction = await dbProvider.Auction.findById(auctionId);
-      return auction;
+      if(auction == null) {
+        return {
+          status: 404,
+          body: ""
+        }
+      }
+      return {
+        status: 200,
+        body: auction
+      };
     });
   };
 
@@ -95,7 +116,16 @@ const auctionService = () => {
   const getAuctionBidsWithinAuction = async (auctionId, cb, errorCb) => {
     return await globalTryCatch(async () => {
       const bids = await dbProvider.AuctionBid.find({ auctionId: auctionId });
-      return bids;
+      if(bids == null) {
+        return {
+          status: 404,
+          body: ""
+        }
+      }
+      return {
+        status: 200,
+        body: bids
+      };
     });
   };
 
