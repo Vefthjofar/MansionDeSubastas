@@ -12,12 +12,12 @@ app.use(bodyParser.json());
 // Art
 app.get("/api/arts", async function(req, res) {
   const result = await artService.getAllArts();
-  return res.json(result);
+  return res.status(result.status).json(result.body);
 });
 
 app.get("/api/arts/:id", async function(req, res) {
   const result = await artService.getArtById(req.params.id);
-  return res.json(result);
+  return res.status(result.status).json(result.body);
 });
 
 app.post("/api/arts", function(req, res) {
@@ -35,12 +35,12 @@ app.post("/api/arts", function(req, res) {
 // Artists
 app.get("/api/artists", async function(req, res) {
   const result = await artistService.getAllArtists();
-  return res.json(result);
+  return res.status(result.status).json(result.body);
 });
 
 app.get("/api/artists/:id", async function(req, res) {
   const result = await artistService.getArtistById(req.params.id);
-  return res.json(result);
+  return res.status(result.status).json(result.body);
 });
 
 app.post("/api/artists", function(req, res) {
@@ -58,12 +58,12 @@ app.post("/api/artists", function(req, res) {
 //Customers
 app.get("/api/customers", async function(req, res) {
   const result = await customerService.getAllCustomers();
-  return res.json(result);
+  return res.status(result.status).json(result.body);
 });
 
 app.get("/api/customers/:id", async function(req, res) {
   const result = await customerService.getCustomerById(req.params.id);
-  return res.json(result);
+  return res.status(result.status).json(result.body);
 });
 
 app.post("/api/customers", function(req, res) {
@@ -80,18 +80,18 @@ app.post("/api/customers", function(req, res) {
 
 app.get("/api/customers/:id/auction-bids", async function(req, res) {
   const result = await customerService.getCustomerAuctionBids(req.params.id);
-  return res.json(result);
+  return res.status(result.status).json(result.body);
 });
 
 // Auctions
 app.get("/api/auctions", async function(req, res) {
   const result = await auctionService.getAllAuctions();
-  return res.json(result);
+  return res.status(result.status).json(result.body);
 });
 
 app.get("/api/auctions/:id", async function(req, res) {
   const result = await auctionService.getAuctionById(req.params.id);
-  return res.json(result);
+  return res.status(result.status).json(result.body);
 });
 
 app.post("/api/auctions", function(req, res) {
@@ -122,12 +122,12 @@ app.get("/api/auctions/:id/bids", async function(req, res) {
   const result = await auctionService.getAuctionBidsWithinAuction(
     req.params.id
   );
-  return res.json(result);
+  return res.status(result.status).json(result.body);
 });
 
 app.get("/api/auctions/:id/winner", async function(req, res) {
   const result = await auctionService.getAuctionWinner(req.params.id);
-  return res.json(result);
+  return res.status(result.status).json(result.body);
 });
 
 app.listen(3000, function() {

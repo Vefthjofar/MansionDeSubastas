@@ -4,22 +4,43 @@ const globalTryCatch = async cb => {
   try {
     return await cb();
   } catch (err) {
-    return err;
+    return {
+      status: 500,
+      body: err
+    };
   }
 }
 
 const artService = () => {
-  const getAllArts = async (cb, errorCb) => {
+  const getAllArts = async () => {
     return await globalTryCatch(async () => {
       const resp = await dbProvider.Art.find({});
-      return resp;
+      if(resp.length == 0) {
+        return {
+          status: 404,
+          body: "No data in database"
+        }
+      }
+      return {
+        status: 200,
+        body: resp
+      };
     });
   };
 
-  const getArtById = async (id, cb, errorCb) => {
+  const getArtById = async (id) => {
     return await globalTryCatch(async () => {
       const resp = await dbProvider.Art.findById(id);
-      return resp;
+      if(resp == null) {
+        return {
+          status: 404,
+          body: "Artwork with requested id not found"
+        }
+      }
+      return {
+        status: 200,
+        body: resp
+      };
     });
   };
 
