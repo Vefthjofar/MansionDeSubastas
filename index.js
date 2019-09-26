@@ -127,7 +127,7 @@ app.get("/api/auctions/:id/bids", async function(req, res) {
 
 app.get("/api/auctions/:id/winner", async function(req, res) {
   const result = await auctionService.getAuctionWinner(req.params.id);
-  return res.json(result);
+  return res.status(result.status).json(result.body);
 });
 
 app.listen(3000, function() {

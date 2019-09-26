@@ -25,9 +25,22 @@ const auctionService = () => {
 
   const getAuctionWinner = async (auctionId, cb, errorCb) => {
     return await globalTryCatch(async () => {
+      const auction = await dbProvider.Auction.findById(auctionId);
+      if(auction.endDate < Date.now()){
+        return {
+          status: 409
+        }
+      }
       const winningBid = await dbProvider.AuctionBid.find({
         auctionId: auctionId
-      })
+      });
+      if(winningBid[0] == null){
+        return {
+          status: 200,
+          body: "This auction has no bids"
+        }
+      }
+      winningBid
         .sort("-price")
         .limit(1);
       const winner = await dbProvider.Customer.findById(
