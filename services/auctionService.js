@@ -1,4 +1,5 @@
 const dbProvider = require("../data/db");
+const Auction = require("../schemas/auction");
 
 const globalTryCatch = async cb => {
   try {
@@ -49,23 +50,16 @@ const auctionService = () => {
       const auction = await dbProvider.Auction.findById(auctionId);
       if (auction.endDate < Date.now()) {
         return {
-          status: 409
+          status: 409,
+          body: "Auction has finished"
         };
       }
-      const winningBid = await dbProvider.AuctionBid.find({
-        auctionId: auctionId
-      });
-      if (winningBid[0] == null) {
-        return {
-          status: 200,
-          body: "This auction has no bids"
-        };
+      if (!auction.auctionWinner) {
+        return cb("this auction has no winner");
       }
-      winningBid.sort("-price").limit(1);
-      const winner = await dbProvider.Customer.findById(
-        winningBid[0].customerId
-      );
-      return winner;
+      const winner = await dbProvider.Customer.findById(auction.auctionWinner);
+
+      return cb(winner);
     });
   };
 
@@ -83,16 +77,17 @@ const auctionService = () => {
   //lower than the minimum price or current highest bid, the web service should return a
   //status code 412 (Precondition failed).
 
-  // gæti komið error ef hann reynir að ná í winningbid þar sem það er ekkert bid**.
   const createAuctionBid = async (auctionBid, cb, errorCb) => {
     const winningBid = await dbProvider.AuctionBid.find({
       auctionId: auctionBid.auctionId
     })
       .sort("-price")
       .limit(1);
-    const auction = await dbProvider.Auction.findById(auctionBid.auctionId);
+    const auctionToBid = await dbProvider.Auction.findById(
+      auctionBid.auctionId
+    );
 
-    if (auction.endDate < Date.now()) {
+    if (auctionToBid.endDate < Date.now()) {
       return {
         status: 409,
         body: "Auction has ended"
@@ -100,15 +95,16 @@ const auctionService = () => {
     }
 
     if (
-      auctionBid.price > auction.minimumPrice &&
+      auctionBid.price > auctionToBid.minimumPrice &&
       auctionBid.price > winningBid[0].price
     ) {
       // updatea auctionið með nyja winnerinum - virkar ekki
-      dbProvider.Auction.findOneAndUpdate(
-        { id: auction.id },
-        { auctionWinner: auctionBid.customerId },
-        { useFindAndModify: false }
-      );
+      auctionToBid.auctionWinner = auctionBid.customerId;
+
+      auctionToBid.save(function(err) {
+        if (err) return errorCb(err);
+      });
+
       const resp = dbProvider.AuctionBid.create(auctionBid, function(
         err,
         result
@@ -121,7 +117,6 @@ const auctionService = () => {
       });
     } else {
       return {
-        // requesta sendist endalaus, koðinn skilast ekki
         status: 412,
         body: "bid too low"
       };
