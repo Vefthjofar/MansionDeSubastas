@@ -9,7 +9,7 @@ const globalTryCatch = async cb => {
       body: err
     };
   }
-}
+};
 
 const customerService = () => {
   const getAllCustomers = async (cb, errorCb) => {
@@ -19,7 +19,7 @@ const customerService = () => {
         return {
           status: 404,
           body: ""
-        }
+        };
       }
       return {
         status: 200,
@@ -35,7 +35,7 @@ const customerService = () => {
         return {
           status: 404,
           body: ""
-        }
+        };
       }
       return {
         status: 200,
@@ -51,7 +51,7 @@ const customerService = () => {
         return {
           status: 404,
           body: ""
-        }
+        };
       }
       return {
         status: 200,
@@ -61,10 +61,12 @@ const customerService = () => {
   };
 
   const createCustomer = (customer, cb, errorCb) => {
-    // Your implementation goes here
-    const resp = dbProvider.Customer.create(customer, function (err, result) {
-      if (err) { errorCb(err); }
-      else { cb(result); }
+    const resp = dbProvider.Customer.create(customer, function(err, result) {
+      if (err) {
+        errorCb(err);
+      } else {
+        cb(result);
+      }
     });
   };
 

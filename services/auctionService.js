@@ -15,11 +15,11 @@ const auctionService = () => {
   const getAllAuctions = async (cb, errorCb) => {
     return await globalTryCatch(async () => {
       const auctions = await dbProvider.Auction.find({});
-      if(auctions.length == 0) {
+      if (auctions.length == 0) {
         return {
           status: 404,
           body: ""
-        }
+        };
       }
       return {
         status: 200,
@@ -31,11 +31,11 @@ const auctionService = () => {
   const getAuctionById = async (auctionId, cb, errorCb) => {
     return await globalTryCatch(async () => {
       const auction = await dbProvider.Auction.findById(auctionId);
-      if(auction == null) {
+      if (auction == null) {
         return {
           status: 404,
           body: ""
-        }
+        };
       }
       return {
         status: 200,
@@ -47,23 +47,21 @@ const auctionService = () => {
   const getAuctionWinner = async (auctionId, cb, errorCb) => {
     return await globalTryCatch(async () => {
       const auction = await dbProvider.Auction.findById(auctionId);
-      if(auction.endDate < Date.now()){
+      if (auction.endDate < Date.now()) {
         return {
           status: 409
-        }
+        };
       }
       const winningBid = await dbProvider.AuctionBid.find({
         auctionId: auctionId
       });
-      if(winningBid[0] == null){
+      if (winningBid[0] == null) {
         return {
           status: 200,
           body: "This auction has no bids"
-        }
+        };
       }
-      winningBid
-        .sort("-price")
-        .limit(1);
+      winningBid.sort("-price").limit(1);
       const winner = await dbProvider.Customer.findById(
         winningBid[0].customerId
       );
@@ -94,10 +92,23 @@ const auctionService = () => {
       .limit(1);
     const auction = await dbProvider.Auction.findById(auctionBid.auctionId);
 
+    if (auction.endDate < Date.now()) {
+      return {
+        status: 409,
+        body: "Auction has ended"
+      };
+    }
+
     if (
       auctionBid.price > auction.minimumPrice &&
-      auctionBid.price > winningBid[0].price //**
+      auctionBid.price > winningBid[0].price
     ) {
+      // updatea auctionið með nyja winnerinum - virkar ekki
+      dbProvider.Auction.findOneAndUpdate(
+        { id: auction.id },
+        { auctionWinner: auctionBid.customerId },
+        { useFindAndModify: false }
+      );
       const resp = dbProvider.AuctionBid.create(auctionBid, function(
         err,
         result
@@ -109,18 +120,22 @@ const auctionService = () => {
         }
       });
     } else {
-      console.log("not good enough");
+      return {
+        // requesta sendist endalaus, koðinn skilast ekki
+        status: 412,
+        body: "bid too low"
+      };
     }
   };
 
   const getAuctionBidsWithinAuction = async (auctionId, cb, errorCb) => {
     return await globalTryCatch(async () => {
       const bids = await dbProvider.AuctionBid.find({ auctionId: auctionId });
-      if(bids == null) {
+      if (bids == null) {
         return {
           status: 404,
           body: ""
-        }
+        };
       }
       return {
         status: 200,
