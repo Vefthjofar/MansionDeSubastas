@@ -48,18 +48,24 @@ const auctionService = () => {
   const getAuctionWinner = async (auctionId, cb, errorCb) => {
     return await globalTryCatch(async () => {
       const auction = await dbProvider.Auction.findById(auctionId);
-      if (auction.endDate < Date.now()) {
+      if (auction == null) {
+        return {status: 404, body: ""}; 
+      }
+      if (auction.endDate > Date.now()) {
         return {
           status: 409,
-          body: "Auction has finished"
+          body: "Auction has not finished"
         };
       }
       if (!auction.auctionWinner) {
-        return cb("this auction has no winner");
+        return {
+          status: 200,
+          body: "this auction had no bids"
+        };
       }
       const winner = await dbProvider.Customer.findById(auction.auctionWinner);
 
-      return cb(winner);
+      return {status: 200, body: winner};
     });
   };
 
